@@ -50,6 +50,7 @@ popd() {
         false
     else
         cd "$1"; result=$?
+        echo "$@"
         shift
         _dir_stack=$(_save_array "$@")
         return "$result"
