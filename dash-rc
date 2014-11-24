@@ -16,7 +16,8 @@ _exitcode() {
     fi
 }
 _vcsinfo() {
-    gitbranch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null) && printf " \033[35m(\033[39mgit\033[35m)\033[33m-\033[35m[\033[32m%s\033[35m]\033[0m" "$gitbranch" && return
+    local branch
+    branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null) && printf " \033[35m(\033[39mgit\033[35m)\033[33m-\033[35m[\033[32m%s\033[35m]\033[0m" "$branch" && return
 }
 PS1=$(printf '$(_exitcode)\033[0m%s\033[94;1m%s\033[0m@%s \033[1m$(_shortpwd)\033[0m$(_vcsinfo) %% ' "${debian_chroot+($debian_chroot)}" "$USER" "$(hostname)")
 
