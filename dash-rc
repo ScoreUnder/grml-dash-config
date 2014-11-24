@@ -7,7 +7,13 @@ _shortpwd() {
 }
 _exitcode() {
     local code=$?
-    [ "$code" != 0 ] && printf '\033[91;1m%s ' "$code"
+    if [ "$code" != 0 ]; then
+        eval "$(resize)"
+        tput cuf $((COLUMNS-3))
+        printf ':('
+        tput cub $((COLUMNS-1))
+        printf '\033[91;1m%s ' "$code"
+    fi
 }
 _vcsinfo() {
     gitbranch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null) && printf " \033[35m(\033[39mgit\033[35m)\033[33m-\033[35m[\033[32m%s\033[35m]\033[0m" "$gitbranch" && return
