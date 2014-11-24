@@ -1,7 +1,7 @@
 # vim: ft=sh
 _shortpwd() {
-    case "$PWD" in
-        $HOME*) echo "~${PWD#$HOME}";;
+    case "$PWD/" in
+        $HOME/*) echo "~${PWD#$HOME}";;
         *) echo "$PWD";;
     esac
 }
