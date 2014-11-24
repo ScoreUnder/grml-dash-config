@@ -18,6 +18,8 @@ alias ls='ls --color=auto'
 alias l='ls -lF'
 alias ll='l -go'
 alias lh='l -Ah'
+alias ..='cd ..'
+alias ...='cd ../..'
 
 # {{{ Arrays in posix sh: http://www.etalabs.net/sh_tricks.html
 _shell_quote() { printf %s\\n "$1" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/'/" ; }
