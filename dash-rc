@@ -1,0 +1,59 @@
+# vim: ft=sh
+_shortpwd() {
+    case "$PWD" in
+        $HOME*) echo "~${PWD#$HOME}";;
+        *) echo "$PWD";;
+    esac
+}
+_exitcode() {
+    local code=$?
+    [ "$code" != 0 ] && printf "\033[91;1m%s " "$code"
+}
+_vcsinfo() {
+    gitbranch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null) && printf " \033[35m(\033[39mgit\033[35m)\033[33m-\033[35m[\033[32m%s\033[35m]\033[0m" "$gitbranch"
+}
+PS1=$(printf '$(_exitcode)\033[0m%s\033[94;1m%s\033[0m@%s \033[1m$(_shortpwd)\033[0m$(_vcsinfo) %% ' "${debian_chroot+($debian_chroot)}" "$USER" "$(hostname)")
+
+alias ls='ls --color=auto'
+alias l='ls -lF'
+alias ll='l -go'
+alias lh='l -Ah'
+
+# {{{ Arrays in posix sh: http://www.etalabs.net/sh_tricks.html
+_shell_quote() { printf %s\\n "$1" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/'/" ; }
+_save_array() {
+    for i do printf %s\\n "$i" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/' \\\\/" ; done
+    echo " "
+}
+# }}}
+
+_dir_stack_size=20
+_dir_stack=
+pushd() {
+    local old_dir=$PWD
+    if command cd "$@"; then
+        eval set -- "$_dir_stack"
+        set -- "$old_dir" "$@"
+        if [ $# -gt "$_dir_stack_size" ]; then
+            # Cut array down to size
+            local n
+            eval set -- "$(printf '"$%s" ' $(seq 1 "$_dir_stack_size"))"
+        fi
+        _dir_stack=$(_save_array "$@")
+    fi
+}
+
+popd() {
+    eval set -- "$_dir_stack"
+    if [ $# = 0 ]; then
+        echo >&2 'popd: directory stack empty'
+        false
+    else
+        cd "$1"; result=$?
+        shift
+        _dir_stack=$(_save_array "$@")
+        return "$result"
+    fi
+}
+
+alias cd=pushd

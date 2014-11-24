@@ -1,0 +1,6 @@
+#!/bin/sh
+[ -r "$PWD/dash-rc" ]   && export "ENV=$PWD/dash-rc"
+[ -r "$HOME/.dash-rc" ] && export "ENV=$HOME/.dash-rc"
+sh=bash
+command -v "$sh" > /dev/null || sh=zsh
+exec rlwrap -Acn bash -c 'exec -a zsh dash'
