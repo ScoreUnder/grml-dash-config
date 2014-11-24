@@ -27,7 +27,7 @@ alias lh='l -Ah'
 alias ..='cd ..'
 alias ...='cd ../..'
 
-# {{{ Arrays in posix sh: http://www.etalabs.net/sh_tricks.html
+# {{{ Arrays in posix sh: <http://www.etalabs.net/sh_tricks.html>
 _shell_quote() { printf %s\\n "$1" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/'/" ; }
 _save_array() {
     for i do printf %s\\n "$i" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/' \\\\/" ; done
