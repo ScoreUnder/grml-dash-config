@@ -61,13 +61,8 @@ EOF
             [ -n "$wcrp" ] && info=$(svn info --non-interactive -- "$wcrp")
             while read line; do
                 case "$line" in
-                    "URL: "*)
-                        dir=${line#*: }
-                        dir=${dir##*/}
-                        ;;
-                    "Revision: "*)
-                        revs=${line#*: }
-                        ;;
+                    "URL: "*) dir=${line#*: }; dir=${dir##*/};;
+                    "Revision: "*) revs=${line#*: };;
                 esac
             done << EOF
 $info
