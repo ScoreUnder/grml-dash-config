@@ -6,12 +6,12 @@ _shortpath() {
     esac
 }
 _exitcode() {
-    local code=$?
+    local code=$? cols
     if [ "$code" != 0 ]; then
-        eval "$(resize)"
-        tput cuf $((COLUMNS-3))
+        cols=$(tput cols)
+        tput cuf $((cols-3))
         printf ':('
-        tput cub $((COLUMNS-1))
+        tput cub $((cols-1))
         printf '\033[91;1m%s ' "$code"
     fi
 }
