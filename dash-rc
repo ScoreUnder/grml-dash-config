@@ -1,8 +1,8 @@
 # vim: ft=sh
-_shortpwd() {
-    case "$PWD/" in
-        $HOME/*) printf %s "~${PWD#$HOME}";;
-        *) printf %s "$PWD";;
+_shortpath() {
+    case "$1/" in
+        $HOME/*) printf %s "~${1#$HOME}";;
+        *) printf %s "$1";;
     esac
 }
 _exitcode() {
@@ -79,7 +79,7 @@ EOF
     done
 }
 
-PS1=$(printf '$(_exitcode)\033[0m%s\033[94;1m%s\033[0m@%s \033[1m$(_shortpwd)\033[0m$(_vcsinfo) %% ' "${debian_chroot+($debian_chroot)}" "$USER" "$(hostname)")
+PS1=$(printf '$(_exitcode)\033[0m%s\033[94;1m%s\033[0m@%s \033[1m$(_shortpath "$PWD")\033[0m$(_vcsinfo) %% ' "${debian_chroot+($debian_chroot)}" "$USER" "$(hostname)")
 
 alias ls='ls --color=auto -F'
 alias l='ls -l'
@@ -119,7 +119,7 @@ popd() {
         false
     else
         cd "$1"; result=$?
-        printf "%s " "$@"; echo
+        for d do printf '%s ' "$(_shortpath "$d")"; done; echo
         shift
         _dir_stack=$(_save_array "$@")
         return "$result"
