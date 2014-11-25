@@ -81,6 +81,9 @@ EOF
 
 PS1=$(printf '$(_exitcode)\033[0m%s\033[94;1m%s\033[0m@%s \033[1m$(_shortpath "$PWD")\033[0m$(_vcsinfo) %% ' "${debian_chroot+($debian_chroot)}" "$USER" "$(hostname)")
 
+_this_rc=$ENV
+unset ENV
+
 alias ls='ls --color=auto -F'
 alias l='ls -l'
 alias ll='l -go'
