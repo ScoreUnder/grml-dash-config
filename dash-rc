@@ -96,8 +96,7 @@ _dir_stack=
 pushd() {
     local old_dir=$PWD
     if command cd "$@"; then
-        eval set -- "$_dir_stack"
-        set -- "$old_dir" "$@"
+        eval set -- '"$old_dir"' "$_dir_stack"
         if [ $# -gt "$_dir_stack_size" ]; then
             # Cut array down to size
             eval set -- "$(printf '"$%s" ' $(seq 1 "$_dir_stack_size"))"
