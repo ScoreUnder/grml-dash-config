@@ -1,5 +1,5 @@
 #!/bin/sh
-dir=$(dirname "$0"; echo .); dir=${dir%.}
+dir=$(dirname "$0"; echo .); dir=${dir%??}
 [ -r "$PWD/dash-rc" ]   && export "ENV=$PWD/dash-rc"
 [ -r "$dir/dash-rc" ]   && export "ENV=$dir/dash-rc"
 [ -r "$HOME/.dash-rc" ] && export "ENV=$HOME/.dash-rc"
