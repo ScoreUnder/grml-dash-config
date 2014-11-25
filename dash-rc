@@ -1,8 +1,8 @@
 # vim: ft=sh
 _shortpwd() {
     case "$PWD/" in
-        $HOME/*) echo "~${PWD#$HOME}";;
-        *) echo "$PWD";;
+        $HOME/*) printf %s "~${PWD#$HOME}";;
+        *) printf %s "$PWD";;
     esac
 }
 _exitcode() {
@@ -17,7 +17,9 @@ _exitcode() {
 }
 
 _vcs_prompt() {
-    printf " \033[35m(\033[39m%s\033[35m)\033[33m-\033[35m[\033[32m%s\033[35m]\033[0m" "$1" "$2"
+    printf " \033[35m(\033[39m%s\033[35m)\033[33m-\033[35m[\033[32m%s" "$1" "$2"
+    [ $# = 3 ] && printf "\033[31m:\033[33m%s" "$3"
+    printf "\033[35m]\033[0m"
 }
 
 _vcsinfo() {
@@ -42,12 +44,41 @@ _vcsinfo() {
             return
         fi
         if [ -d "$evidence/.bzr" ] && branch=$(bzr nick 2>/dev/null); then
-            _vcs_prompt bzr "$(printf "%s\033[31m:\033[33m%s" "$branch" "$(bzr revno)")"
+            _vcs_prompt bzr "$branch" "$(bzr revno)"
             return
         fi
+        if [ -d "$evidence/.svn" ] && info=$(svn info --non-interactive); then
+            local line wcrp= dir= revs=
+            while read line; do
+                case "$line" in
+                    "Working Copy Root Path: "*)
+                        wcrp=${line#*: }
+                        break;;
+                esac
+            done << EOF
+$info
+EOF
+            [ -n "$wcrp" ] && info=$(svn info --non-interactive -- "$wcrp")
+            while read line; do
+                case "$line" in
+                    "URL: "*)
+                        dir=${line#*: }
+                        dir=${dir##*/}
+                        ;;
+                    "Revision: "*)
+                        revs=${line#*: }
+                        ;;
+                esac
+            done << EOF
+$info
+EOF
+            [ -n "$dir" -a -n "$revs" ] && _vcs_prompt svn "$dir" "$revs" && return
+        fi
+        # Go up a directory
         evidence=${evidence%/*}
     done
 }
+
 PS1=$(printf '$(_exitcode)\033[0m%s\033[94;1m%s\033[0m@%s \033[1m$(_shortpwd)\033[0m$(_vcsinfo) %% ' "${debian_chroot+($debian_chroot)}" "$USER" "$(hostname)")
 
 alias ls='ls --color=auto -F'
@@ -88,7 +119,7 @@ popd() {
         false
     else
         cd "$1"; result=$?
-        echo "$@"
+        printf "%s " "$@"; echo
         shift
         _dir_stack=$(_save_array "$@")
         return "$result"
