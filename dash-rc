@@ -103,7 +103,6 @@ pushd() {
         set -- "$old_dir" "$@"
         if [ $# -gt "$_dir_stack_size" ]; then
             # Cut array down to size
-            local n
             eval set -- "$(printf '"$%s" ' $(seq 1 "$_dir_stack_size"))"
         fi
         _dir_stack=$(_save_array "$@")
