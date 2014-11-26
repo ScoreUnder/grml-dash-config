@@ -5,4 +5,4 @@ dir=$(dirname "$0"; echo .); dir=${dir%??}
 [ -r "$HOME/.dash-rc" ] && export "ENV=$HOME/.dash-rc"
 sh=bash
 command -v "$sh" > /dev/null || sh=zsh
-exec rlwrap -Acn "$sh" -c 'exec -a zsh dash'
+exec rlwrap -Acnb '(){}[],'\''=&$"#;:|\' "$sh" -c 'exec -a zsh dash'
