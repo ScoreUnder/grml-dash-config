@@ -1,12 +1,13 @@
 # vim: ft=sh
 _shortpath() {
     case "$1/" in
-        $HOME/*) printf %s "~${1#$HOME}";;
+        "$HOME"/*) printf %s "~${1#$HOME}";;
         *) printf %s "$1";;
     esac
 }
+
 _exitcode() {
-    local code=$? cols
+    local code="$?" cols
     if [ "$code" != 0 ]; then
         cols=$(tput cols)
         tput cuf $((cols-3))
@@ -18,7 +19,7 @@ _exitcode() {
 
 _vcs_prompt() {
     printf " \033[35m(\033[39m%s\033[35m)\033[33m-\033[35m[\033[32m%s" "$1" "$2"
-    [ $# = 3 ] && printf "\033[31m:\033[33m%s" "$3"
+    [ "$#" = 3 ] && printf "\033[31m:\033[33m%s" "$3"
     printf "\033[35m]\033[0m"
 }
 
@@ -94,7 +95,7 @@ _save_array() {
 _dir_stack_size=20
 _dir_stack=
 pushd() {
-    local old_dir=$PWD
+    local old_dir="$PWD"
     if command cd "$@"; then
         eval set -- '"$old_dir"' "$_dir_stack"
         if [ $# -gt "$_dir_stack_size" ]; then
@@ -111,7 +112,7 @@ popd() {
         echo >&2 'popd: directory stack empty'
         false
     else
-        cd "$1"; result=$?
+        cd -- "$1"; result=$?
         for d do printf '%s ' "$(_shortpath "$d")"; done; echo
         shift
         _dir_stack=$(_save_array "$@")
