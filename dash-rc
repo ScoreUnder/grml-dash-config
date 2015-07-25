@@ -30,6 +30,12 @@ _vcsinfo() {
         _vcs_prompt cvs "$(cat CVS/Repository)"
         return
     fi
+
+    # If PWD doesn't start with a /, exit to avoid an infinite loop
+    # This "should never happen" but we all know what happens when
+    # things "should never happen"...
+    [ "${evidence#/}" = "$evidence" ] && return 1
+
     # bzr is dog slow, some others probably are too.
     # Scanning for evidence of each VCS in each parent directory is *much*
     # faster than launching each VCS to do the scanning and directory
