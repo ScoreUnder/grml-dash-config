@@ -1,9 +1,62 @@
 # vim: ft=sh
+
+_safe_str() {
+    # XXX Returns a value in a variable, to avoid forking (for speed reasons)
+    # Return value is in safe_str_result
+    local str next ch
+    str=$1
+    safe_str_result=
+    while [ -n "$str" ]; do
+        next=${str#?}
+        ch=${str%"$next"}
+        str=$next
+        case $ch in
+            ([a-zA-Z0-9_]) ;;
+            (*) ch=_;;
+        esac
+        safe_str_result=$safe_str_result$ch
+    done
+}
+
+_cache_passwd() {
+    # XXX Uses named variables as an associative array hack
+    # Not always 100% accurate if paths contain "special characters"
+    # Sets _homedir_* variables
+    local x user home safe_str_result
+    while IFS=: read -r user x x x x home x; do
+        # Other than /root, make sure we have at least 2 path components
+        case "$home" in
+            (/*/* | /root) ;;
+            (/*) continue;;
+        esac
+        _safe_str "$home"; home=$safe_str_result
+        eval "_homedir_$home=\$user"
+    done
+    # Ensure that our home takes precedence over other users which may
+    # share this home directory.
+    _safe_str "$HOME"; home=$safe_str_result
+    eval "_homedir_$home=\$USER"
+}
+_cache_passwd < /etc/passwd
+
 _shortpath() {
-    case "$1/" in
-        "$HOME"/*) printf %s "~${1#$HOME}";;
-        *) printf %s "$1";;
-    esac
+    local part pretty_dir safe_str_result
+    part=$1
+    pretty_dir=
+    while [ "${part%/*}" != "$part" ]; do
+        _safe_str "$part"
+        eval "pretty_dir=\$_homedir_$safe_str_result"
+        [ -n "$pretty_dir" ] && break
+        part=${part%/*}
+    done
+    if [ -z "$pretty_dir" ]; then
+        pretty_dir=$1
+    elif [ "$pretty_dir" = "$USER" ]; then
+        pretty_dir=\~${1#$part}
+    else
+        pretty_dir=\~$pretty_dir${1#$part}
+    fi
+    printf %s\\n "$pretty_dir"
 }
 
 _exitcode() {
