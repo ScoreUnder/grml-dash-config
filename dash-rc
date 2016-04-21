@@ -126,4 +126,9 @@ popd() {
     fi
 }
 
+dirs() {
+    eval set -- "$_dir_stack"
+    for d do printf '%s ' "$(_shortpath "$d")"; done; echo
+}
+
 alias cd=pushd
