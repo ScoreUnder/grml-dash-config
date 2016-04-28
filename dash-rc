@@ -180,7 +180,7 @@ popd() {
 }
 
 dirs() {
-    eval set -- "$_dir_stack"
+    eval 'set -- "$PWD" '"$_dir_stack"
     for d do printf '%s ' "$(_shortpath "$d")"; done; echo
 }
 
