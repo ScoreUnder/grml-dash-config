@@ -157,7 +157,7 @@ pushd() {
     local old_dir="$PWD"
     if command cd "$@"; then
         eval set -- '"$old_dir"' "$_dir_stack"
-        if [ $# -gt "$_dir_stack_size" ]; then
+        if [ "$#" -gt "$_dir_stack_size" ]; then
             # Cut array down to size
             eval set -- "$(printf '"$%s" ' $(seq 1 "$_dir_stack_size"))"
         fi
@@ -167,7 +167,7 @@ pushd() {
 
 popd() {
     eval set -- "$_dir_stack"
-    if [ $# = 0 ]; then
+    if [ "$#" = 0 ]; then
         echo >&2 'popd: directory stack empty'
         false
     else
